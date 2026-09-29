@@ -1,5 +1,3 @@
-import { pendingMigrations } from "../../scripts/migration-plan.mjs";
-
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
 
@@ -8,12 +6,17 @@ const rawDatabaseUrl =
 const databaseUrl =
   rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
 
+/**
+ * Active backend: real Postgres when DATABASE_URL is set.
+ * Without DATABASE_URL we never open PGlite on deployed hosts — storefront uses
+ * in-repo seed data (see catalog-from-seed / products).
+ */
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
 export interface Sql {
   <T = Record<string, unknown>>(
     strings: TemplateStringsArray,
-    ...values: unknown[]
+    ...values: unknown[],
   ): Promise<T[]>;
   query<T = Record<string, unknown>>(
     text: string,
@@ -23,8 +26,6 @@ export interface Sql {
 
 const globalRef = globalThis as typeof globalThis & {
   __pgSqlPromise__?: Promise<Sql>;
-  __pgliteInstance__?: Promise<import("@electric-sql/pglite").PGlite>;
-  __pgliteMigrateChain__?: Promise<void>;
 };
 
 const OID_INT8 = 20;
@@ -66,80 +67,17 @@ function createNeonSql(): Promise<Sql> {
   return globalRef.__pgSqlPromise__;
 }
 
-async function createPgliteSql(): Promise<Sql> {
-  globalRef.__pgliteInstance__ ??= (async () => {
-    const { PGlite } = await import("@electric-sql/pglite");
-    const parsers = {
-      [OID_INT8]: Number,
-      [OID_DATE]: identity,
-      [OID_INTERVAL]: identity,
-    };
-    let options: ConstructorParameters<typeof PGlite>[0] = { parsers };
-
-    // Only open PGlite when the wasm/data assets are actually on disk.
-    // Vercel serverless strips them → missing file → we refuse to construct.
-    if (typeof process !== "undefined" && typeof process.versions?.node === "string") {
-      try {
-        const { createRequire } = await import("node:module");
-        const { readFileSync, existsSync } = await import("node:fs");
-        const { dirname, join } = await import("node:path");
-        const require = createRequire(import.meta.url);
-        const pkgJson = require.resolve("@electric-sql/pglite/package.json");
-        const dist = join(dirname(pkgJson), "dist");
-        const dataPath = join(dist, "pglite.data");
-        const wasmPath = join(dist, "pglite.wasm");
-        if (!existsSync(dataPath) || !existsSync(wasmPath)) {
-          throw new Error(
-            "PGlite assets missing (pglite.data / pglite.wasm). Use seed catalog or set DATABASE_URL.",
-          );
-        }
-        const fsBundle = new Blob([readFileSync(dataPath)]);
-        const pgliteWasmModule = await WebAssembly.compile(readFileSync(wasmPath));
-        options = { parsers, fsBundle, pgliteWasmModule };
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (msg.includes("PGlite assets missing")) throw err;
-        throw new Error(`PGlite unavailable: ${msg}`);
-      }
-    }
-
-    const pg = new PGlite(options);
-    await pg.waitReady;
-    await pg.exec(
-      "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
-    );
-    return pg;
-  })().catch((err) => {
-    globalRef.__pgliteInstance__ = undefined;
-    throw err;
-  });
-  const pg = await globalRef.__pgliteInstance__;
-
-  const migrate = async (): Promise<void> => {
-    const migrations = import.meta.glob("/migrations/*.sql", {
-      query: "?raw",
-      import: "default",
-      eager: true,
-    }) as Record<string, string>;
-    const doneRows = await pg.query<{ name: string }>("select name from _migrations");
-    const done = doneRows.rows.map((r) => r.name);
-    for (const { name, path } of pendingMigrations(Object.keys(migrations), done)) {
-      await pg.transaction(async (tx) => {
-        await tx.exec(migrations[path]);
-        await tx.query("insert into _migrations (name) values ($1)", [name]);
-      });
-    }
-  };
-  const pass = (globalRef.__pgliteMigrateChain__ ?? Promise.resolve())
-    .catch(() => undefined)
-    .then(migrate);
-  globalRef.__pgliteMigrateChain__ = pass;
-  await pass;
-
-  return toSql(async <T>(text: string, params: unknown[]) => {
-    const result = await pg.query<T>(text, params);
-    return result.rows;
-  });
+/**
+ * PGlite is intentionally unavailable in this build.
+ * Importing @electric-sql/pglite on Vercel resolves pglite.data to
+ * /var/task/_libs/pglite.data and crashes with ENOENT. Storefront uses seed data.
+ */
+function createPgliteSql(): Promise<Sql> {
+  return Promise.reject(
+    new Error(
+      "PGlite is disabled. Set DATABASE_URL for Postgres, or use the seed catalog for the storefront.",
+    ),
+  );
 }
 
 let sqlPromise: Promise<Sql> | null = null;
@@ -159,17 +97,10 @@ export function getSql(): Promise<Sql> {
   return sqlPromise;
 }
 
-export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
-  if (dbSource !== "pglite") {
-    throw new Error("getPglite() only available without DATABASE_URL");
-  }
-  await getSql();
-  const pg = await globalRef.__pgliteInstance__;
-  if (!pg) throw new Error("PGLite instance failed to initialize");
-  return pg;
+export async function getPglite(): Promise<never> {
+  throw new Error("getPglite() is disabled — set DATABASE_URL or use seed catalog");
 }
 
 export function ensureDbReady(): Promise<void> {
-  // Never auto-boot: storefront uses seed catalog; only open when explicitly queried.
   return Promise.resolve();
 }
