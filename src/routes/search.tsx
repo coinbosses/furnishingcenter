@@ -42,18 +42,16 @@ function SearchPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <header className="space-y-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Search</p>
-          <h1 className="mt-2 text-3xl font-semibold md:text-4xl">Find what you're looking for</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Search</p>
+          <h1 className="mt-1.5 text-2xl font-semibold tracking-tight md:text-3xl">Find what you're looking for</h1>
         </div>
         <p className="max-w-2xl text-sm leading-relaxed text-muted">
           Search by name, material or category. A result only appears if that exact term is on the piece — a refrigerator won't appear under sofas.
         </p>
       </header>
 
-      {/* Refined search input */}
       <div className="relative">
         <SearchIcon className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted pointer-events-none" />
         <Input
@@ -68,7 +66,6 @@ function SearchPage() {
         />
       </div>
 
-      {/* Filters & Sort section */}
       <div className="flex items-center justify-between gap-3 md:hidden">
         <button
           type="button"
@@ -88,7 +85,6 @@ function SearchPage() {
         </select>
       </div>
 
-      {/* Mobile filters panel */}
       {mobileFiltersOpen && (
         <div className="space-y-4 rounded-lg border border-border bg-surface p-4 md:hidden">
           <div>
@@ -115,7 +111,6 @@ function SearchPage() {
         </div>
       )}
 
-      {/* Desktop filters (always visible) */}
       <div className="hidden gap-4 md:flex md:items-start">
         <aside className="w-48 space-y-4">
           <div>
@@ -168,7 +163,6 @@ function SearchPage() {
           )}
         </aside>
 
-        {/* Main content with sort */}
         <div className="flex-1">
           <div className="mb-4 flex items-center justify-between gap-2">
             <select
@@ -185,21 +179,18 @@ function SearchPage() {
         </div>
       </div>
 
-      {/* Mobile results */}
       <div className="md:hidden">
         <ProductGrid products={shown} />
       </div>
 
-      {/* Results info */}
       <div className="flex items-center justify-center gap-2 text-sm text-muted py-4 md:hidden">
         {products.isPending ? "Searching…" : `${shown.length} ${shown.length === 1 ? "piece" : "pieces"}`}
         {q.trim() ? ` for "${q.trim()}"` : ""}
       </div>
 
-      {/* No results state */}
       {!products.isPending && !shown.length && (
         <div className="rounded-lg border border-border bg-surface p-8 text-center">
-          <p className="font-display text-xl">No pieces found</p>
+          <p className="text-xl font-semibold">No pieces found</p>
           <p className="mt-2 text-sm text-muted">Try a different search term or browse by category.</p>
         </div>
       )}
