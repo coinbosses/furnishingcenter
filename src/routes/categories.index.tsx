@@ -15,32 +15,26 @@ function CategoriesPage() {
 
   return (
     <div className="space-y-14">
-      {/* Header */}
-      <header className="space-y-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Departments</p>
-          <h1 className="mt-2 text-4xl font-semibold md:text-5xl">Shop by category</h1>
-        </div>
-        <p className="max-w-2xl text-base leading-relaxed text-muted">
+      <header className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Departments</p>
+        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Shop by category</h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-muted">
           Furniture, appliances and electronics each have their own department. Open a category and you only see pieces that belong there — a freezer is never listed as a refrigerator.
         </p>
       </header>
 
-      {/* Department sections */}
       {parents.map((parent) => {
         const children = data.filter((c) => c.parentId === parent.id).sort((a, b) => a.sortOrder - b.sortOrder);
         const total = children.reduce((n, c) => n + countOf(c.id), 0);
 
         return (
           <section key={parent.id} className="space-y-6">
-            {/* Department hero card */}
             <Link
               to="/categories/$slug"
               params={{ slug: parent.id }}
               className="group relative overflow-hidden rounded-2xl border border-border bg-white transition-all hover:border-accent hover:shadow-md"
             >
               <div className="grid md:grid-cols-[1.2fr_1fr]">
-                {/* Image */}
                 <div className="aspect-[16/9] overflow-hidden bg-surface-2 md:aspect-auto md:min-h-56">
                   <img
                     src={parent.imageUrl}
@@ -48,13 +42,11 @@ function CategoriesPage() {
                     className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 </div>
-
-                {/* Content */}
                 <div className="flex flex-col justify-between p-6 md:p-8">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Department</p>
-                    <h2 className="mt-3 text-3xl font-semibold md:text-4xl text-ink">{parent.name}</h2>
-                    <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">{parent.description}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Department</p>
+                    <h2 className="mt-2 text-xl font-semibold text-ink md:text-2xl">{parent.name}</h2>
+                    <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">{parent.description}</p>
                   </div>
                   <div className="mt-4 flex items-center justify-between">
                     <p className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -66,7 +58,6 @@ function CategoriesPage() {
               </div>
             </Link>
 
-            {/* Subcategories grid */}
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {children.map((c) => (
                 <Link
@@ -79,7 +70,7 @@ function CategoriesPage() {
                     <img
                       src={c.imageUrl}
                       alt={c.name}
-                      className="size-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                   </div>
                   <div className="p-3">
