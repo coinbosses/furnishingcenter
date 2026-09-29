@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: strip-vercel
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   strip:
@@ -24,41 +24,31 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Remove .vercel if present
+      - name: Nuclear remove .vercel
         id: strip
         run: |
-          set -x
-          if [ -d .vercel ]; then
-            echo "Found .vercel — removing"
-            find .vercel -type f | wc -l
+          set -eux
+          COUNT=$(git ls-files '.vercel' | wc -l)
+          echo "Tracked .vercel files: $COUNT"
+          if [ "$COUNT" -gt 0 ] || [ -d .vercel ]; then
+            git ls-files -z '.vercel' | xargs -0 -r git rm -f --ignore-unmatch || true
             rm -rf .vercel
+            git rm -f --ignore-unmatch src/lib/auth/pglite-dialect.ts || true
             echo "removed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "No .vercel directory"
             echo "removed=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Commit and push
         if: steps.strip.outputs.removed == 'true'
         run: |
-          set -x
+          set -eux
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git status
           if git diff --cached --quiet; then
-            echo "Nothing to commit"
+            echo "Nothing staged"
             exit 0
           fi
-          git commit -m "ci: remove committed .vercel/output (PGlite prebuild)"
-          # Retry push in case of race with other commits
-          for i in 1 2 3 4 5; do
-            git pull --rebase origin main || true
-            if git push origin HEAD:main; then
-              echo "Push succeeded"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Push failed after retries"
-          exit 1
+          git commit -m "ci: nuclear remove .vercel/output (PGlite ENOENT fix)"
+          git push origin HEAD:main --force-with-lease || git push origin HEAD:main
