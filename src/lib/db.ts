@@ -3,18 +3,11 @@ import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
 
-// An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
-// "unset" — otherwise production would silently run on the PGLite fallback.
 const rawDatabaseUrl =
   typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
 const databaseUrl =
   rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
 
-/**
- * Active backend: real Postgres when `DATABASE_URL` is set, otherwise PGLite
- * for local/preview. On Vercel without DATABASE_URL, catalog uses seed data
- * and PGlite is never opened.
- */
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
 export interface Sql {
@@ -74,13 +67,6 @@ function createNeonSql(): Promise<Sql> {
 }
 
 async function createPgliteSql(): Promise<Sql> {
-  // Never open PGlite on Vercel/Lambda — the .data/.wasm assets are not in the
-  // serverless bundle and crash with ENOENT. Catalog routes use seed data.
-  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    throw new Error(
-      "PGlite is not available on Vercel. Set DATABASE_URL for Postgres, or use the seed catalog.",
-    );
-  }
   globalRef.__pgliteInstance__ ??= (async () => {
     const { PGlite } = await import("@electric-sql/pglite");
     const parsers = {
@@ -89,6 +75,9 @@ async function createPgliteSql(): Promise<Sql> {
       [OID_INTERVAL]: identity,
     };
     let options: ConstructorParameters<typeof PGlite>[0] = { parsers };
+
+    // Only open PGlite when the wasm/data assets are actually on disk.
+    // Vercel serverless strips them → missing file → we refuse to construct.
     if (typeof process !== "undefined" && typeof process.versions?.node === "string") {
       try {
         const { createRequire } = await import("node:module");
@@ -99,15 +88,21 @@ async function createPgliteSql(): Promise<Sql> {
         const dist = join(dirname(pkgJson), "dist");
         const dataPath = join(dist, "pglite.data");
         const wasmPath = join(dist, "pglite.wasm");
-        if (existsSync(dataPath) && existsSync(wasmPath)) {
-          const fsBundle = new Blob([readFileSync(dataPath)]);
-          const pgliteWasmModule = await WebAssembly.compile(readFileSync(wasmPath));
-          options = { parsers, fsBundle, pgliteWasmModule };
+        if (!existsSync(dataPath) || !existsSync(wasmPath)) {
+          throw new Error(
+            "PGlite assets missing (pglite.data / pglite.wasm). Use seed catalog or set DATABASE_URL.",
+          );
         }
+        const fsBundle = new Blob([readFileSync(dataPath)]);
+        const pgliteWasmModule = await WebAssembly.compile(readFileSync(wasmPath));
+        options = { parsers, fsBundle, pgliteWasmModule };
       } catch (err) {
-        console.warn("[db] PGlite asset preload failed, falling back to defaults:", err);
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes("PGlite assets missing")) throw err;
+        throw new Error(`PGlite unavailable: ${msg}`);
       }
     }
+
     const pg = new PGlite(options);
     await pg.waitReady;
     await pg.exec(
@@ -126,9 +121,7 @@ async function createPgliteSql(): Promise<Sql> {
       import: "default",
       eager: true,
     }) as Record<string, string>;
-    const doneRows = await pg.query<{ name: string }>(
-      "select name from _migrations",
-    );
+    const doneRows = await pg.query<{ name: string }>("select name from _migrations");
     const done = doneRows.rows.map((r) => r.name);
     for (const { name, path } of pendingMigrations(Object.keys(migrations), done)) {
       await pg.transaction(async (tx) => {
@@ -153,10 +146,7 @@ let sqlPromise: Promise<Sql> | null = null;
 
 async function createSql(): Promise<Sql> {
   if (typeof window !== "undefined") {
-    throw new Error(
-      "@/lib/db is server-only — call getSql() from a createServerFn handler " +
-        "or a server route loader, never from client code.",
-    );
+    throw new Error("@/lib/db is server-only");
   }
   return dbSource === "neon" ? createNeonSql() : createPgliteSql();
 }
@@ -170,11 +160,8 @@ export function getSql(): Promise<Sql> {
 }
 
 export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
-  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    throw new Error("getPglite() is not available on Vercel/Lambda");
-  }
   if (dbSource !== "pglite") {
-    throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
+    throw new Error("getPglite() only available without DATABASE_URL");
   }
   await getSql();
   const pg = await globalRef.__pgliteInstance__;
@@ -183,25 +170,6 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
 }
 
 export function ensureDbReady(): Promise<void> {
-  if (dbSource !== "pglite") return Promise.resolve();
-  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    return Promise.resolve();
-  }
-  return getSql().then(() => undefined);
-}
-
-const globalBoot = globalThis as typeof globalThis & {
-  __pgBootstrapPromise__?: Promise<void>;
-};
-if (
-  typeof window === "undefined" &&
-  dbSource === "pglite" &&
-  !process.env.VERCEL &&
-  !process.env.AWS_LAMBDA_FUNCTION_NAME
-) {
-  globalBoot.__pgBootstrapPromise__ ??= ensureDbReady().catch((err) => {
-    globalBoot.__pgBootstrapPromise__ = undefined;
-    console.error("[db] PGLite bootstrap failed:", err);
-    throw err;
-  });
+  // Never auto-boot: storefront uses seed catalog; only open when explicitly queried.
+  return Promise.resolve();
 }
