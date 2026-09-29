@@ -23,11 +23,15 @@ function AccountPage() {
   return (
     <div className="space-y-8">
       <header className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-muted">Account</p>
-          <h1 className="font-display text-4xl md:text-5xl">{profile.data?.fullName || user.displayName || "Your account"}</h1>
-          <p className="mt-1 text-sm text-muted">{user.primaryEmail}</p>
-          <p className="mt-2 max-w-md text-sm text-muted">Orders, addresses and the pieces you saved. Tracking stays with the order, from pending to delivered.</p>
+        <div className="space-y-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Account</p>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            {profile.data?.fullName || user.displayName || "Your account"}
+          </h1>
+          <p className="text-sm text-muted">{user.primaryEmail}</p>
+          <p className="max-w-md text-sm text-muted">
+            Orders, addresses and the pieces you saved. Tracking stays with the order, from pending to delivered.
+          </p>
         </div>
         <UserButton />
       </header>
@@ -42,13 +46,13 @@ function AccountPage() {
       {profile.data?.role === "admin" ? (
         <Link to="/admin" className="block rounded-xl bg-primary px-5 py-4 text-primary-fg">
           <p className="text-xs uppercase tracking-widest text-primary-fg/70">Staff</p>
-          <p className="font-display text-2xl">Open admin dashboard</p>
+          <p className="text-lg font-semibold">Open admin dashboard</p>
         </Link>
       ) : null}
 
       {current.length ? (
         <section>
-          <h2 className="mb-3 font-display text-2xl">Current orders</h2>
+          <h2 className="mb-3 text-lg font-semibold">Current orders</h2>
           <ul className="space-y-2">
             {current.map((o) => (
               <li key={o.id}>
@@ -71,7 +75,7 @@ function AccountPage() {
 
       {(notes.data ?? []).length ? (
         <section>
-          <h2 className="mb-3 font-display text-2xl">Notifications</h2>
+          <h2 className="mb-3 text-lg font-semibold">Notifications</h2>
           <ul className="space-y-2">
             {(notes.data ?? []).slice(0, 6).map((n) => (
               <li key={n.id} className="rounded-xl bg-surface px-4 py-3 text-sm">
