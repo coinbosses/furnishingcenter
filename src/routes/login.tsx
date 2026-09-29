@@ -44,10 +44,10 @@ function Login() {
     <main className="grid min-h-dvh place-items-center bg-bg px-4 py-10">
       <div className="w-full max-w-md">
         <Link to="/" className="mb-8 flex items-center">
-          <img src="/logo.png" alt="Furnishing Center" className="h-24 w-24 object-contain" />
+          <img src="/logo.png" alt="Furnishing Centre" className="h-14 w-auto object-contain" />
         </Link>
         <div className="rounded-xl border border-border bg-surface p-6">
-          <h1 className="font-display text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight">
             {mode === "in" ? "Welcome back" : "Create your account"}
           </h1>
           <p className="mt-1 text-sm text-muted">
