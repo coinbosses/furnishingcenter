@@ -1,0 +1,44 @@
+name: Strip committed .vercel/output
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: strip-vercel
+  cancel-in-progress: true
+
+jobs:
+  strip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove .vercel if present
+        id: strip
+        run: |
+          if [ -d .vercel ]; then
+            echo "Found .vercel — removing"
+            rm -rf .vercel
+            echo "removed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No .vercel directory"
+            echo "removed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push
+        if: steps.strip.outputs.removed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status
+          git commit -m "ci: remove committed .vercel/output (PGlite prebuild)"
+          git push origin HEAD:main
