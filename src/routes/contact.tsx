@@ -17,22 +17,19 @@ function ContactPage() {
 
   return (
     <div className="space-y-12">
-      {/* Hero header */}
       <header className="space-y-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Showroom</p>
-          <h1 className="mt-2 text-4xl font-semibold leading-tight md:text-5xl">Visit Furnishing Center in Karu</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Showroom</p>
+          <h1 className="mt-1.5 text-2xl font-semibold leading-tight tracking-tight md:text-3xl">Visit Furnishing Centre in Karu</h1>
         </div>
         <p className="max-w-2xl text-base leading-relaxed text-muted">{STORE.address}</p>
         <p className="text-sm font-medium text-muted">Plus code {STORE.plusCode}</p>
       </header>
 
-      {/* Map section */}
       <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         <ShowroomMap />
       </div>
 
-      {/* Contact CTA cards */}
       <div className="grid gap-3 sm:grid-cols-3">
         <a
           href={`tel:${STORE.phoneTel}`}
@@ -70,7 +67,6 @@ function ContactPage() {
         </a>
       </div>
 
-      {/* Hours & Details */}
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-4 rounded-2xl border border-border bg-surface p-6">
           <div>
@@ -114,11 +110,10 @@ function ContactPage() {
         </div>
       </div>
 
-      {/* Delivery Options */}
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-3 rounded-2xl border border-border bg-surface p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Pickup</p>
-          <h3 className="text-2xl font-semibold text-ink">Collect in Karu</h3>
+          <h3 className="text-xl font-semibold text-ink">Collect in Karu</h3>
           <p className="text-sm leading-relaxed text-muted">
             Choose store pickup at checkout. Collection is at this showroom on Sen George Akume Way, New Karu. We hold in-stock pieces for you.
           </p>
@@ -126,7 +121,7 @@ function ContactPage() {
         </div>
         <div className="space-y-3 rounded-2xl border border-border bg-surface p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Delivery</p>
-          <h3 className="text-2xl font-semibold text-ink">Anywhere</h3>
+          <h3 className="text-xl font-semibold text-ink">Anywhere</h3>
           <p className="text-sm leading-relaxed text-muted">
             Delivery is not limited to Abuja or nearby districts. Enter the address at checkout. Large furniture is scheduled before it leaves the floor.
           </p>
@@ -134,11 +129,10 @@ function ContactPage() {
         </div>
       </div>
 
-      {/* Shop by department */}
       <section className="space-y-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Browse</p>
-          <h2 className="mt-2 text-2xl font-semibold text-ink">Shop by department</h2>
+          <h2 className="mt-2 text-xl font-semibold text-ink">Shop by department</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {[
