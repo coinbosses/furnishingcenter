@@ -68,7 +68,7 @@ function CheckoutForm() {
   if (!items.length) {
     return (
       <div className="py-16 text-center">
-        <p className="font-display text-3xl">Nothing to check out</p>
+        <p className="text-2xl font-semibold tracking-tight">Nothing to check out</p>
         <Link to="/cart" className="mt-4 inline-block text-sm underline">
           Back to cart
         </Link>
@@ -126,12 +126,12 @@ function CheckoutForm() {
     <div className="grid gap-8 md:grid-cols-[1fr_20rem]">
       <div className="space-y-8">
         <header>
-          <p className="text-xs uppercase tracking-widest text-muted">Checkout</p>
-          <h1 className="font-display text-4xl">Your details</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Checkout</p>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Your details</h1>
         </header>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl">Customer</h2>
+          <h2 className="text-lg font-semibold">Customer</h2>
           <div className="space-y-1">
             <Label>Full name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -143,7 +143,7 @@ function CheckoutForm() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl">Fulfillment</h2>
+          <h2 className="text-lg font-semibold">Fulfillment</h2>
           <div className="grid grid-cols-2 gap-2">
             {(["delivery", "pickup"] as const).map((f) => (
               <button
@@ -163,7 +163,7 @@ function CheckoutForm() {
 
         {fulfillment === "delivery" ? (
           <section className="space-y-3">
-            <h2 className="font-display text-xl">Delivery address</h2>
+            <h2 className="text-lg font-semibold">Delivery address</h2>
             {(addrQ.data ?? []).map((a) => (
               <label key={a.id} className="flex gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
                 <input type="radio" checked={addressId === a.id && !newAddr} onChange={() => { setAddressId(a.id); setNewAddr(false); }} />
@@ -193,7 +193,7 @@ function CheckoutForm() {
         )}
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl">Payment</h2>
+          <h2 className="text-lg font-semibold">Payment</h2>
           <label className="flex gap-3 rounded-xl border border-border bg-surface p-4 text-sm">
             <input type="radio" checked={payment === "card"} onChange={() => setPayment("card")} />
             <span>
@@ -218,7 +218,7 @@ function CheckoutForm() {
       </div>
 
       <aside className="h-fit rounded-xl border border-border bg-surface p-5">
-        <h2 className="font-display text-xl">Order summary</h2>
+        <h2 className="text-lg font-semibold">Order summary</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {lines.map(({ item, product }) => (
             <li key={item.productId + (item.color ?? "")} className="flex justify-between gap-3">
