@@ -1,4 +1,4 @@
-import { getSql } from "@/lib/db";
+import { dbSource, getSql } from "@/lib/db";
 import { CATALOG_VERSION, PRODUCT_DELIVERY, SEED_BANNERS, SEED_CATEGORIES, SEED_PRODUCTS } from "@/lib/catalog-data";
 // Reseed when CATALOG_VERSION changes. Version 8 adds the Nigerian floor.
 
@@ -17,6 +17,8 @@ export function seedIfNeeded(): Promise<void> {
 }
 
 async function doSeed() {
+  // No external DB — seed catalog is served in-memory; nothing to write.
+  if (dbSource !== "neon") return;
   const sql = await getSql();
   const marked = await sql<{ value: string }>`select value from store_meta where key = 'catalog_version'`;
   if (marked[0]?.value === CATALOG_VERSION) return;
