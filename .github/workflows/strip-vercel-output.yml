@@ -1,8 +1,6 @@
 name: Strip committed .vercel/output
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,45 +8,38 @@ permissions:
 
 concurrency:
   group: strip-vercel
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   strip:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Nuclear remove .vercel
-        id: strip
-        run: |
-          set -eux
-          COUNT=$(git ls-files '.vercel' | wc -l)
-          echo "Tracked .vercel files: $COUNT"
-          if [ "$COUNT" -gt 0 ] || [ -d .vercel ]; then
-            git ls-files -z '.vercel' | xargs -0 -r git rm -f --ignore-unmatch || true
-            rm -rf .vercel
-            git rm -f --ignore-unmatch src/lib/auth/pglite-dialect.ts || true
-            echo "removed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "removed=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Commit and push
-        if: steps.strip.outputs.removed == 'true'
+      - name: Rebuild tree without .vercel and force-push main
         run: |
           set -eux
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "Nothing staged"
-            exit 0
+
+          # Remove every tracked .vercel path
+          if git ls-files '.vercel' | grep -q .; then
+            git ls-files -z '.vercel' | xargs -0 git rm -rf --cached || true
           fi
-          git commit -m "ci: nuclear remove .vercel/output (PGlite ENOENT fix)"
-          git push origin HEAD:main --force-with-lease || git push origin HEAD:main
+          rm -rf .vercel
+
+          # Also drop the unused stub if present
+          git rm -f --ignore-unmatch src/lib/auth/pglite-dialect.ts || true
+
+          # Stage everything else as a clean tree on an orphan branch
+          git checkout --orphan clean-main
+          git add -A
+          git status --short | head -50
+          git commit -m "ci: clean main without .vercel/output (fix PGlite / config.json error)"
+
+          # Force main to this clean history
+          git branch -M main
+          git push origin main --force
