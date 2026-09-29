@@ -11,6 +11,7 @@
   --color-primary: #171715;
   --color-primary-fg: #FFFFFF;
   --color-accent: #C9972B;
+  --color-accent-dark: #9A6C16;
   --color-danger: #9A302A;
   --color-success: #2C6A48;
   --color-warn: #8B641B;
@@ -24,35 +25,151 @@
 }
 
 @layer base {
-  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-  html, body, #root { min-height: 100%; background: var(--color-bg); color: var(--color-ink); }
-  body { font-family: var(--font-sans); }
-  h1, h2, h3, .font-display { font-family: var(--font-display); text-wrap: balance; }
-  p { text-wrap: pretty; }
-  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
-  input, textarea, select { font-family: inherit; color: var(--color-ink); }
-  input::placeholder, textarea::placeholder { color: var(--color-muted); opacity: 1; }
-  ::selection { background: var(--color-ink); color: #fff; }
-  :focus-visible { outline: 3px solid color-mix(in srgb, var(--color-accent) 70%, white); outline-offset: 2px; }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    background: var(--color-bg);
+    color: var(--color-ink);
+  }
+  body {
+    font-family: var(--font-sans);
+  }
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+    color: var(--color-ink);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-muted);
+    opacity: 1;
+  }
+  ::selection {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-accent) 70%, white);
+    outline-offset: 2px;
+  }
 }
 
-.header-milk { background: var(--color-header); }
-.logo-blend { mix-blend-mode: screen; filter: none; }
-main { max-width: 1320px !important; }
-article { border: 1px solid var(--color-border); box-shadow: none; }
-article:hover { border-color: #c9bda9; }
-article img { transition: transform 300ms ease; }
+/* Header */
+.header-bar {
+  background: var(--color-header);
+}
 
-@media (max-width: 767px) {
-  header .logo-blend { height: 3.75rem !important; max-width: 10.5rem; }
-  header > div:last-child { height: 4.75rem !important; }
-  main { padding-top: 1rem !important; padding-bottom: 6.5rem !important; }
+/* Logo sits cleanly on taupe — no box, no blend hacks that create rectangles */
+.logo-header {
+  display: block;
+  height: 3.25rem;
+  width: auto;
+  max-width: 11rem;
+  object-fit: contain;
+  object-position: left center;
+  background: transparent;
 }
-@media (min-width: 768px) { main { padding-top: 2.5rem !important; } }
-@media (max-width: 639px) {
-  a[aria-label="Chat on WhatsApp"] { width: 3.5rem; height: 3.5rem; padding: 0; justify-content: center; border-radius: 999px; font-size: 0; }
-  a[aria-label="Chat on WhatsApp"] svg { width: 1.45rem; height: 1.45rem; }
+
+@media (min-width: 768px) {
+  .logo-header {
+    height: 3.5rem;
+    max-width: 13rem;
+  }
 }
+
+@media (min-width: 1024px) {
+  .logo-header {
+    height: 3.75rem;
+    max-width: 14rem;
+  }
+}
+
+.logo-footer {
+  height: 4.5rem;
+  width: auto;
+  object-fit: contain;
+  background: transparent;
+}
+
+article.product-card {
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+  border-radius: var(--radius-md);
+}
+article.product-card:hover {
+  border-color: #c9bda9;
+}
+
+.section-space {
+  margin-top: 2.5rem;
+}
+@media (min-width: 768px) {
+  .section-space {
+    margin-top: 3.5rem;
+  }
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.wa-fab {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  padding: 0;
+  justify-content: center;
+}
+.wa-fab span {
+  display: none;
+}
+@media (min-width: 768px) {
+  .wa-fab {
+    width: auto;
+    height: 2.75rem;
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
+  .wa-fab span {
+    display: inline;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

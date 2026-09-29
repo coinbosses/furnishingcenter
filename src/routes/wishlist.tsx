@@ -18,10 +18,10 @@ function WishlistPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-xs uppercase tracking-widest text-muted">Saved</p>
-        <h1 className="font-display text-4xl md:text-5xl">Wishlist</h1>
-        <p className="mt-2 max-w-xl text-sm text-muted">
+      <header className="space-y-1.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Saved</p>
+        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Wishlist</h1>
+        <p className="max-w-xl text-sm text-muted">
           Saved pieces stay in their own categories. A heart on a sofa does not file it under appliances.
         </p>
       </header>
@@ -30,11 +30,13 @@ function WishlistPage() {
       ) : products.length ? (
         <ProductGrid products={products} />
       ) : (
-        <div className="rounded-xl border border-border bg-surface p-8 text-center">
-          <p className="font-display text-2xl">Nothing saved yet</p>
-          <p className="mt-2 text-sm text-muted">Save a piece from its own category. Hearts remember the item, not a stand-in.</p>
+        <div className="rounded-xl border border-border bg-surface p-10 text-center">
+          <p className="text-xl font-semibold">Your wishlist is waiting for something special.</p>
+          <p className="mt-2 text-sm text-muted max-w-sm mx-auto">
+            Save pieces you like while browsing. Hearts remember the exact item.
+          </p>
           <Button asChild className="mt-6">
-            <Link to="/categories">Browse the floor</Link>
+            <Link to="/categories">Browse categories</Link>
           </Button>
         </div>
       )}
