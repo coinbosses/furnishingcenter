@@ -11,10 +11,17 @@ export function PriceTag({
   className?: string;
 }) {
   const onSale = compareAt != null && compareAt > price;
+
   return (
-    <div className={cn("flex flex-wrap items-baseline gap-2 tabular-nums", className)}>
-      <span className={cn("text-base font-semibold", onSale ? "text-danger" : "text-ink")}>{formatNaira(price)}</span>
-      {onSale ? <span className="text-sm text-muted line-through">{formatNaira(compareAt)}</span> : null}
+    <div className={cn("flex flex-wrap items-baseline gap-x-2 gap-y-0.5 tabular-nums", className)}>
+      <span className={cn("text-base font-bold tracking-tight", onSale ? "text-danger" : "text-ink")}>
+        {formatNaira(price)}
+      </span>
+      {onSale ? (
+        <span className="text-xs font-medium text-muted line-through" aria-label={`Previous price ${formatNaira(compareAt)}`}>
+          {formatNaira(compareAt)}
+        </span>
+      ) : null}
     </div>
   );
 }
