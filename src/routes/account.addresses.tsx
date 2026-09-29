@@ -40,7 +40,7 @@ function AddressesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-4xl">Addresses</h1>
+      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Addresses</h1>
       <ul className="space-y-3">
         {(list.data ?? []).map((a) => (
           <li key={a.id} className="rounded-xl border border-border bg-surface p-4 text-sm">
