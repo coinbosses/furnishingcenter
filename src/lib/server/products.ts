@@ -13,8 +13,16 @@ import {
 } from "@/lib/server/catalog-from-seed";
 import type { Product } from "@/lib/types";
 
-/** Prefer in-repo seed catalog when no external Postgres is configured. */
-const useSeedCatalog = dbSource === "pglite";
+/**
+ * Always serve catalog from in-repo seed data when:
+ * - no external Postgres (dbSource === "pglite"), OR
+ * - running on Vercel/Lambda (PGlite WASM assets are missing from the bundle)
+ * Never open PGlite on serverless — it crashes with ENOENT pglite.data.
+ */
+const useSeedCatalog =
+  dbSource === "pglite" ||
+  Boolean(process.env.VERCEL) ||
+  Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
 
 const listInput = z.object({
   category: z.string().optional(),
