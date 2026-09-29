@@ -1,86 +1,166 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, MapPin, Phone, MessageCircle, Navigation } from "lucide-react";
 import { ShowroomMap } from "@/components/showroom-map";
 import { STORE } from "@/lib/constants";
 
 export const Route = createFileRoute("/contact")({ component: ContactPage });
 
 function ContactPage() {
+  const catsQ = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await fetch("/api/categories");
+      return res.json();
+    },
+  });
+
   return (
-    <div className="space-y-8">
-      <header>
-        <p className="text-sm font-medium uppercase tracking-widest text-ink">Showroom</p>
-        <h1 className="mt-1 font-display text-5xl text-ink md:text-6xl">Visit Furnishing Center</h1>
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-ink">{STORE.address}</p>
-        <p className="mt-2 text-base text-ink">
-          Plus code {STORE.plusCode} · {STORE.hours}
-        </p>
+    <div className="space-y-12">
+      {/* Hero header */}
+      <header className="space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Showroom</p>
+          <h1 className="mt-2 text-4xl font-semibold leading-tight md:text-5xl">Visit Furnishing Center in Karu</h1>
+        </div>
+        <p className="max-w-2xl text-base leading-relaxed text-muted">{STORE.address}</p>
+        <p className="text-sm font-medium text-muted">Plus code {STORE.plusCode}</p>
       </header>
 
-      <ShowroomMap />
+      {/* Map section */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+        <ShowroomMap />
+      </div>
 
+      {/* Contact CTA cards */}
       <div className="grid gap-3 sm:grid-cols-3">
         <a
           href={`tel:${STORE.phoneTel}`}
-          className="flex h-14 items-center justify-center gap-2 rounded-full bg-primary text-base font-medium text-primary-fg"
+          className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent hover:bg-surface-2"
         >
-          <Phone className="size-5" /> Call {STORE.phoneDisplay}
+          <Phone className="size-5 shrink-0 text-accent" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Call</p>
+            <p className="mt-0.5 font-medium text-ink">{STORE.phoneDisplay}</p>
+          </div>
         </a>
         <a
           href={`https://wa.me/${STORE.whatsapp}`}
-          className="flex h-14 items-center justify-center gap-2 rounded-full border-2 border-ink bg-surface text-base font-medium text-ink"
+          target="_blank"
+          rel="noreferrer"
+          className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent hover:bg-surface-2"
         >
-          <MessageCircle className="size-5" /> WhatsApp
+          <MessageCircle className="size-5 shrink-0 text-accent" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Message</p>
+            <p className="mt-0.5 font-medium text-ink">WhatsApp</p>
+          </div>
         </a>
         <a
           href={STORE.mapsUrl}
           target="_blank"
           rel="noreferrer"
-          className="flex h-14 items-center justify-center gap-2 rounded-full border-2 border-ink bg-ink text-base font-medium text-primary-fg"
+          className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-4 transition-all hover:border-accent hover:bg-surface-2"
         >
-          <Navigation className="size-5" /> Directions
+          <Navigation className="size-5 shrink-0 text-accent" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Navigate</p>
+            <p className="mt-0.5 font-medium text-ink">Google Maps</p>
+          </div>
         </a>
       </div>
 
-      <div className="rounded-xl border-2 border-ink bg-surface p-5">
-        <p className="flex gap-2 text-base font-medium leading-relaxed text-ink">
-          <MapPin className="mt-0.5 size-5 shrink-0" />
-          {STORE.name}
-        </p>
-        <p className="mt-2 pl-7 text-base leading-relaxed text-ink">{STORE.address}</p>
+      {/* Hours & Details */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-4 rounded-2xl border border-border bg-surface p-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Hours</p>
+            <p className="mt-2 font-medium text-ink">{STORE.hours}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Address</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink">{STORE.address}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Payment accepted</p>
+            <p className="mt-2 text-sm font-medium text-ink">{STORE.bank.name}</p>
+            <p className="text-xs text-muted">{STORE.bank.accountName}</p>
+            <p className="text-xs text-muted">{STORE.bank.accountNumber}</p>
+          </div>
+        </div>
+
+        <div className="space-y-4 rounded-2xl border border-border bg-accent p-6 text-ink">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em]">Quick facts</p>
+            <ul className="mt-3 space-y-2 text-sm font-medium">
+              <li className="flex items-start gap-2">
+                <span className="mt-1 size-1.5 rounded-full bg-ink/60 shrink-0" />
+                Verified pieces on the showroom floor
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 size-1.5 rounded-full bg-ink/60 shrink-0" />
+                Same-day collection when in stock
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 size-1.5 rounded-full bg-ink/60 shrink-0" />
+                Delivery anywhere in Nigeria
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 size-1.5 rounded-full bg-ink/60 shrink-0" />
+                Card or bank transfer payment
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border-2 border-ink bg-surface p-5">
-          <p className="text-sm font-medium uppercase tracking-widest text-ink">Store pickup</p>
-          <p className="mt-2 font-display text-3xl text-ink">Collect in Karu</p>
-          <p className="mt-2 text-base leading-relaxed text-ink">
-            Choose store pickup at checkout. Collection is this showroom on Sen George Akume Way, New Karu. We hold in-stock pieces for you.
+      {/* Delivery Options */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-3 rounded-2xl border border-border bg-surface p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Pickup</p>
+          <h3 className="text-2xl font-semibold text-ink">Collect in Karu</h3>
+          <p className="text-sm leading-relaxed text-muted">
+            Choose store pickup at checkout. Collection is at this showroom on Sen George Akume Way, New Karu. We hold in-stock pieces for you.
           </p>
+          <p className="text-xs font-medium text-success">Free</p>
         </div>
-        <div className="rounded-xl border-2 border-ink bg-surface p-5">
-          <p className="text-sm font-medium uppercase tracking-widest text-ink">Home delivery</p>
-          <p className="mt-2 font-display text-3xl text-ink">Anywhere</p>
-          <p className="mt-2 text-base leading-relaxed text-ink">
-            Delivery is not limited to Abuja or those nearby districts. Enter the address at checkout. Large furniture is scheduled before it leaves the floor.
+        <div className="space-y-3 rounded-2xl border border-border bg-surface p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Delivery</p>
+          <h3 className="text-2xl font-semibold text-ink">Anywhere</h3>
+          <p className="text-sm leading-relaxed text-muted">
+            Delivery is not limited to Abuja or nearby districts. Enter the address at checkout. Large furniture is scheduled before it leaves the floor.
           </p>
+          <p className="text-xs font-medium text-muted">From ₦8,500</p>
         </div>
       </div>
-      <div className="grid gap-3 md:grid-cols-3">
-        {[
-          { slug: "furniture", title: "Furniture", image: "/banners/living-hero.jpg", note: "Sofas, beds, tables, lighting" },
-          { slug: "appliances", title: "Appliances", image: "/banners/kitchen-hero.jpg", note: "Cold, laundry, cooking, cooling" },
-          { slug: "electronics", title: "Electronics", image: "/products/tv-75.jpg", note: "Televisions, sound, small electronics" },
-        ].map((d) => (
-          <Link key={d.slug} to="/categories/$slug" params={{ slug: d.slug }} className="overflow-hidden rounded-xl border-2 border-ink bg-surface">
-            <img src={d.image} alt="" className="aspect-[4/3] w-full object-cover" />
-            <div className="p-4">
-              <p className="font-display text-2xl text-ink">{d.title}</p>
-              <p className="mt-1 text-base text-ink">{d.note}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
+
+      {/* Shop by department */}
+      <section className="space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Browse</p>
+          <h2 className="mt-2 text-2xl font-semibold text-ink">Shop by department</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            { slug: "furniture", title: "Furniture", note: "Sofas, beds, tables, lighting" },
+            { slug: "appliances", title: "Appliances", note: "Cold, laundry, cooking, cooling" },
+            { slug: "electronics", title: "Electronics", note: "Televisions, sound, small electronics" },
+          ].map((d) => (
+            <Link key={d.slug} to="/categories/$slug" params={{ slug: d.slug }} className="group overflow-hidden rounded-xl border border-border bg-surface transition-all hover:border-accent hover:shadow-md">
+              <div className="aspect-[4/3] overflow-hidden bg-surface-2">
+                <div className="size-full bg-gradient-to-br from-surface to-surface-2" />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-ink">{d.title}</h3>
+                <p className="mt-1 text-sm text-muted">{d.note}</p>
+                <p className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-accent">
+                  Explore <ArrowRight className="size-4" />
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
