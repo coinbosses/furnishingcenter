@@ -68,9 +68,9 @@ function CategoryPage() {
         <div className="overflow-hidden rounded-2xl bg-surface">
           <img src={category.imageUrl} alt="" className="aspect-[16/9] w-full object-cover md:aspect-[21/8]" />
           <div className="p-5 md:p-8">
-            <h1 className="font-display text-4xl leading-none text-ink md:text-5xl">{category.name}</h1>
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">{category.description}</p>
-            <p className="mt-3 text-xs font-medium uppercase tracking-widest text-accent">
+            <h1 className="text-2xl font-semibold leading-tight tracking-tight text-ink md:text-3xl">{category.name}</h1>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">{category.description}</p>
+            <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
               {children.length
                 ? `${shown.length} pieces across this department, nothing else`
                 : `${shown.length} pieces filed only here`}
@@ -78,9 +78,9 @@ function CategoryPage() {
           </div>
         </div>
       ) : (
-        <header>
-          <h1 className="font-display text-4xl">{category?.name ?? "Category"}</h1>
-          <p className="mt-1 text-sm text-muted">{category?.description}</p>
+        <header className="space-y-1.5">
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{category?.name ?? "Category"}</h1>
+          <p className="text-sm text-muted">{category?.description}</p>
         </header>
       )}
 
@@ -102,7 +102,7 @@ function CategoryPage() {
           <Link
             to="/categories/$slug"
             params={{ slug: parent!.id }}
-            className="shrink-0 rounded-full border border-border bg-surface px-4 py-2 text-sm"
+            className="shrink-0 rounded-lg border border-border bg-surface px-3.5 py-2 text-sm font-medium"
           >
             All {parent!.name.toLowerCase()}
           </Link>
@@ -111,7 +111,7 @@ function CategoryPage() {
               key={c.id}
               to="/categories/$slug"
               params={{ slug: c.id }}
-              className={`shrink-0 rounded-full px-4 py-2 text-sm ${c.id === slug ? "bg-primary text-primary-fg" : "border border-border bg-surface"}`}
+              className={`shrink-0 rounded-lg px-3.5 py-2 text-sm font-medium ${c.id === slug ? "bg-primary text-primary-fg" : "border border-border bg-surface"}`}
             >
               {c.name}
             </Link>
@@ -123,14 +123,14 @@ function CategoryPage() {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as typeof sort)}
-          className="h-11 rounded-full border border-border bg-surface px-4 text-sm"
+          className="h-10 rounded-lg border border-border bg-surface px-3 text-sm"
         >
           <option value="featured">Featured</option>
           <option value="newest">Newest</option>
           <option value="price_asc">Price: low to high</option>
           <option value="price_desc">Price: high to low</option>
         </select>
-        <label className="flex h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm">
+        <label className="flex h-10 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm">
           <input type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} />
           In stock
         </label>
@@ -146,7 +146,7 @@ function CategoryPage() {
             key={id}
             type="button"
             onClick={() => setBand(id)}
-            className={`h-11 rounded-full px-4 text-sm ${band === id ? "bg-primary text-primary-fg" : "border border-border bg-surface"}`}
+            className={`h-10 rounded-lg px-3.5 text-sm font-medium ${band === id ? "bg-primary text-primary-fg" : "border border-border bg-surface"}`}
           >
             {label}
           </button>
