@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/categories/cookers",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Furnishing Center",
+      "hasCanvas": false,
+      "bodyTextLen": 1852,
+      "bodyTextHash": "9c4defdcc6c6d0c2d52cb42f302775645c248c22af5ef073c66c62c820645d5c",
+      "bodyTextPrefix": "Karu showroom · Mon–Sat 9:00–19:00 · Sun 12:00–17:00 Furniture, ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/cat-cookers.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Furnishing Center",
+      "hasCanvas": false,
+      "bodyTextLen": 1707,
+      "bodyTextHash": "5c0f0759685a1a236eae08435e65db984f7275b10cabad814672c0fc4240c163",
+      "bodyTextPrefix": "FC Furnishing Center KARU · ABUJA Categories/Appliances/Cookers ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/cat-cookers-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/cat-cookers.json"
+}

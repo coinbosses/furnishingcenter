@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/categories/sofas",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Furnishing Center",
+      "hasCanvas": false,
+      "bodyTextLen": 2183,
+      "bodyTextHash": "fa305aba41257a59bb7bff194006d0a04726d2a35de67a8276e4610fafa74860",
+      "bodyTextPrefix": "Karu showroom · Mon–Sat 9:00–19:00 · Sun 12:00–17:00 Furniture, ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/sofas.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Furnishing Center",
+      "hasCanvas": false,
+      "bodyTextLen": 2038,
+      "bodyTextHash": "e3433198ef4a2626b9969c50518e98aae20a6ef904680b1278c40073c0e42ac1",
+      "bodyTextPrefix": "FC Furnishing Center KARU · ABUJA Categories/Furniture/Sofas and",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/sofas-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/sofas.json"
+}

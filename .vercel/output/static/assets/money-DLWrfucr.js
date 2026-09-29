@@ -1,0 +1,1 @@
+var e=new Intl.NumberFormat(`en-NG`,{style:`currency`,currency:`NGN`,maximumFractionDigits:0});function t(t){return e.format(t)}function n(e,t){return t===`pickup`||e>=4e5?0:8500}export{t as n,n as t};

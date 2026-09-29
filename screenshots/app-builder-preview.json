@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Furnishing Center",
+      "hasCanvas": false,
+      "bodyTextLen": 22118,
+      "bodyTextHash": "7ba4741b03e2725ea8efbbec037b68735f62240f0d288bcfe2ba71382b0963a4",
+      "bodyTextPrefix": "Karu showroom · Mon–Sat 9:00–19:00 · Sun 12:00–17:00 Furniture, ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Furnishing Center",
+      "hasCanvas": false,
+      "bodyTextLen": 21981,
+      "bodyTextHash": "b0dedba57256113ac853c20a5b0296d8bcad7cabdc52ebdc5daf2aa85b357f7a",
+      "bodyTextPrefix": "FC Furnishing Center KARU · ABUJA FURNISHING CENTER · KARU, ABUJ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
