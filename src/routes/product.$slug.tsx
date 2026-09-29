@@ -57,7 +57,7 @@ function ProductPage() {
   if (!product) {
     return (
       <div className="py-16 text-center">
-        <p className="font-display text-3xl">Piece not found</p>
+        <p className="text-2xl font-semibold tracking-tight">Piece not found</p>
         <Link to="/categories" className="mt-4 inline-block text-sm underline">
           Back to categories
         </Link>
@@ -70,7 +70,7 @@ function ProductPage() {
   const recent = (allQ.data ?? []).filter((p) => recentIds.includes(p.id) && p.id !== product.id);
   const category = catsQ.data?.find((c) => c.id === product.categoryId);
   const parent = catsQ.data?.find((c) => c.id === category?.parentId);
-  const wa = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(`Hello Furnishing Center, I want to ask about ${product.name} (${product.id}).`)}`;
+  const wa = `https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(`Hello Furnishing Centre, I want to ask about ${product.name} (${product.id}).`)}`;
 
   function addLine(goCheckout: boolean) {
     if (status === "out_of_stock") {
@@ -151,8 +151,8 @@ function ProductPage() {
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-widest text-muted">{status === "out_of_stock" ? "Unavailable" : stockLabel(product.stock)}</p>
-          <h1 className="mt-1 font-display text-4xl leading-tight">{product.name}</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">{status === "out_of_stock" ? "Unavailable" : stockLabel(product.stock)}</p>
+          <h1 className="mt-1.5 text-2xl font-semibold leading-tight tracking-tight md:text-3xl">{product.name}</h1>
           {category ? (
             <p className="mt-2 text-sm leading-relaxed text-muted">
               Filed under{" "}
@@ -201,7 +201,7 @@ function ProductPage() {
                     type="button"
                     onClick={() => setSize(s)}
                     className={cn(
-                      "h-10 rounded-full px-4 text-sm",
+                      "h-10 rounded-lg px-4 text-sm",
                       size === s ? "bg-primary text-primary-fg" : "bg-surface-2",
                     )}
                   >
@@ -213,12 +213,12 @@ function ProductPage() {
           ) : null}
 
           <div className="mt-6 flex items-center gap-3">
-            <div className="flex h-12 items-center rounded-full border border-border">
-              <button type="button" className="size-12" onClick={() => setQty(Math.max(1, qty - 1))}>
+            <div className="flex h-11 items-center rounded-lg border border-border">
+              <button type="button" className="size-11" onClick={() => setQty(Math.max(1, qty - 1))}>
                 −
               </button>
               <span className="w-8 text-center tabular-nums">{qty}</span>
-              <button type="button" className="size-12" onClick={() => setQty(Math.min(product.stock || 1, qty + 1))}>
+              <button type="button" className="size-11" onClick={() => setQty(Math.min(product.stock || 1, qty + 1))}>
                 +
               </button>
             </div>
@@ -239,7 +239,7 @@ function ProductPage() {
               <Heart className={cn("size-4", wished && "fill-ink")} />
               {wished ? "Saved" : "Wishlist"}
             </Button>
-            <a href={wa} className="inline-flex h-11 items-center justify-center gap-2 rounded-full text-sm hover:bg-surface-2">
+            <a href={wa} className="inline-flex h-11 items-center justify-center gap-2 rounded-lg text-sm hover:bg-surface-2">
               <MessageCircle className="size-4" /> WhatsApp
             </a>
           </div>
@@ -270,14 +270,14 @@ function ProductPage() {
 
       {(relatedQ.data ?? []).length ? (
         <section>
-          <h2 className="mb-4 font-display text-2xl">Related pieces</h2>
+          <h2 className="mb-4 text-xl font-semibold tracking-tight">Related pieces</h2>
           <ProductRail products={relatedQ.data ?? []} />
         </section>
       ) : null}
 
       {recent.length ? (
         <section>
-          <h2 className="mb-4 font-display text-2xl">Recently viewed</h2>
+          <h2 className="mb-4 text-xl font-semibold tracking-tight">Recently viewed</h2>
           <ProductRail products={recent} />
         </section>
       ) : null}
@@ -297,7 +297,7 @@ function ProductPage() {
       {askOpen ? (
         <div className="fixed inset-0 z-40 grid place-items-end bg-ink/40 p-4 md:place-items-center" onClick={() => setAskOpen(null)}>
           <div className="w-full max-w-md rounded-xl bg-surface p-5" onClick={(e) => e.stopPropagation()}>
-            <h3 className="font-display text-2xl">{askOpen === "quote" ? "Request a quote" : "Ask about this piece"}</h3>
+            <h3 className="text-xl font-semibold tracking-tight">{askOpen === "quote" ? "Request a quote" : "Ask about this piece"}</h3>
             <p className="mt-1 text-sm text-muted">{product.name}</p>
             <div className="mt-4 space-y-3">
               <div className="space-y-1">
