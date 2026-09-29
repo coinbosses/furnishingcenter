@@ -16,7 +16,7 @@ function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-4xl">Orders</h1>
+      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Orders</h1>
       {!(orders.data ?? []).length ? (
         <p className="text-sm text-muted">No orders yet.</p>
       ) : (

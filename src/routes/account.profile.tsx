@@ -29,7 +29,7 @@ function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-4xl">Profile</h1>
+      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Profile</h1>
       <div className="space-y-3">
         <div className="space-y-1">
           <Label>Full name</Label>
