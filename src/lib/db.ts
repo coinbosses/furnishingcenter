@@ -3,11 +3,18 @@ import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 /** Which database backend is active. */
 export type DbSource = "neon" | "pglite";
 
+// An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
+// "unset" — otherwise production would silently run on the PGLite fallback.
 const rawDatabaseUrl =
   typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
 const databaseUrl =
   rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
 
+/**
+ * Active backend: real Postgres when `DATABASE_URL` is set, otherwise PGLite
+ * for local/preview. On Vercel without DATABASE_URL, catalog uses seed data
+ * and PGlite is never opened.
+ */
 export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
 
 export interface Sql {
@@ -67,6 +74,13 @@ function createNeonSql(): Promise<Sql> {
 }
 
 async function createPgliteSql(): Promise<Sql> {
+  // Never open PGlite on Vercel/Lambda — the .data/.wasm assets are not in the
+  // serverless bundle and crash with ENOENT. Catalog routes use seed data.
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    throw new Error(
+      "PGlite is not available on Vercel. Set DATABASE_URL for Postgres, or use the seed catalog.",
+    );
+  }
   globalRef.__pgliteInstance__ ??= (async () => {
     const { PGlite } = await import("@electric-sql/pglite");
     const parsers = {
@@ -156,6 +170,9 @@ export function getSql(): Promise<Sql> {
 }
 
 export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    throw new Error("getPglite() is not available on Vercel/Lambda");
+  }
   if (dbSource !== "pglite") {
     throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
   }
@@ -167,7 +184,6 @@ export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite
 
 export function ensureDbReady(): Promise<void> {
   if (dbSource !== "pglite") return Promise.resolve();
-  // Never open PGlite on Vercel — WASM data file is missing from the bundle.
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
     return Promise.resolve();
   }
