@@ -1,4 +1,4 @@
 {
   "installCommand": "npm install --omit=dev --no-audit --no-fund --no-package-lock",
-  "buildCommand": "rm -rf .vercel/output && npm run build"
+  "buildCommand": "npm run build"
 }
