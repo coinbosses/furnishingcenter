@@ -111,13 +111,35 @@ async function createPgliteSql(): Promise<Sql> {
   // data survives source edits (it resets on dev-server restart).
   globalRef.__pgliteInstance__ ??= (async () => {
     const { PGlite } = await import("@electric-sql/pglite");
-    const pg = new PGlite({
-      parsers: {
-        [OID_INT8]: Number,
-        [OID_DATE]: identity,
-        [OID_INTERVAL]: identity,
-      },
-    });
+    // Vercel/Nitro often breaks `new URL("./pglite.data", import.meta.url)` so
+    // the WASM FS bundle is missing at `/var/task/_libs/pglite.data`. Load the
+    // package assets explicitly from node_modules when running on Node.
+    const parsers = {
+      [OID_INT8]: Number,
+      [OID_DATE]: identity,
+      [OID_INTERVAL]: identity,
+    };
+    let options: ConstructorParameters<typeof PGlite>[0] = { parsers };
+    if (typeof process !== "undefined" && typeof process.versions?.node === "string") {
+      try {
+        const { createRequire } = await import("node:module");
+        const { readFileSync, existsSync } = await import("node:fs");
+        const { dirname, join } = await import("node:path");
+        const require = createRequire(import.meta.url);
+        const pkgJson = require.resolve("@electric-sql/pglite/package.json");
+        const dist = join(dirname(pkgJson), "dist");
+        const dataPath = join(dist, "pglite.data");
+        const wasmPath = join(dist, "pglite.wasm");
+        if (existsSync(dataPath) && existsSync(wasmPath)) {
+          const fsBundle = new Blob([readFileSync(dataPath)]);
+          const pgliteWasmModule = await WebAssembly.compile(readFileSync(wasmPath));
+          options = { parsers, fsBundle, pgliteWasmModule };
+        }
+      } catch (err) {
+        console.warn("[db] PGlite asset preload failed, falling back to defaults:", err);
+      }
+    }
+    const pg = new PGlite(options);
     await pg.waitReady;
     await pg.exec(
       "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
