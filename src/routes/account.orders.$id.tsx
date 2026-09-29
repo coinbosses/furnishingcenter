@@ -42,8 +42,8 @@ function OrderDetailPage() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-widest text-muted">Order</p>
-        <h1 className="font-display text-4xl">{order.id}</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">Order</p>
+        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{order.id}</h1>
         <p className="mt-1 text-sm text-muted">{ORDER_LABELS[status] ?? status}</p>
       </header>
 
@@ -108,7 +108,7 @@ function OrderDetailPage() {
 
       {order.events.length ? (
         <section>
-          <h2 className="mb-3 font-display text-xl">Updates</h2>
+          <h2 className="mb-3 text-lg font-semibold">Updates</h2>
           <ul className="space-y-2 text-sm">
             {order.events.map((e) => (
               <li key={e.id} className="text-muted">
